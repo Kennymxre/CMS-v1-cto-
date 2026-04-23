@@ -32,14 +32,14 @@ export default function SignInPage() {
       })
 
       if (result?.error) {
-        toast.error("Invalid credentials")
+        toast.error("Неверные учетные данные")
       } else {
-        toast.success("Signed in successfully")
+        toast.success("Вход выполнен успешно")
         router.push(callbackUrl)
         router.refresh()
       }
     } catch (error) {
-      toast.error("An error occurred")
+      toast.error("Произошла ошибка")
     } finally {
       setIsLoading(false)
     }
@@ -49,9 +49,9 @@ export default function SignInPage() {
     <div className="min-h-screen flex items-center justify-center bg-muted/30">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl text-center">Sign in</CardTitle>
+          <CardTitle className="text-2xl text-center">Вход</CardTitle>
           <CardDescription className="text-center">
-            Enter your credentials to access the admin dashboard
+            Введите свои данные для доступа к панели администратора
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -67,7 +67,7 @@ export default function SignInPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Пароль</Label>
               <Input
                 id="password"
                 name="password"
@@ -77,12 +77,12 @@ export default function SignInPage() {
               />
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign in"}
+              {isLoading ? "Вход..." : "Войти"}
             </Button>
           </form>
 
           <div className="mt-6 text-center text-sm text-muted-foreground">
-            <p>Demo credentials:</p>
+            <p>Демо-данные для входа:</p>
             <p className="font-mono text-xs mt-1">admin@example.com / admin123</p>
           </div>
         </CardContent>

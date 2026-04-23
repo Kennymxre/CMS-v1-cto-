@@ -78,20 +78,20 @@ const blockTypeIcons: Record<BlockType, React.ReactNode> = {
 }
 
 const blockTypeLabels: Record<BlockType, string> = {
-  [BlockType.TEXT]: "Text",
-  [BlockType.IMAGE]: "Image",
-  [BlockType.LINK]: "Link",
-  [BlockType.QUOTE]: "Quote",
-  [BlockType.CODE]: "Code",
-  [BlockType.DIVIDER]: "Divider",
+  [BlockType.TEXT]: "Текст",
+  [BlockType.IMAGE]: "Изображение",
+  [BlockType.LINK]: "Ссылка",
+  [BlockType.QUOTE]: "Цитата",
+  [BlockType.CODE]: "Код",
+  [BlockType.DIVIDER]: "Разделитель",
   [BlockType.KPI]: "KPI",
-  [BlockType.CHART]: "Chart",
-  [BlockType.NEWS_CARD]: "News Card",
-  [BlockType.MARKET_NEWS]: "Market News",
-  [BlockType.EXPERT_GRID]: "Expert Grid",
-  [BlockType.TIMELINE]: "Timeline",
-  [BlockType.NOTES]: "Notes",
-  [BlockType.REGULATION]: "Regulation",
+  [BlockType.CHART]: "График",
+  [BlockType.NEWS_CARD]: "Карточка новостей",
+  [BlockType.MARKET_NEWS]: "Новости рынка",
+  [BlockType.EXPERT_GRID]: "Сетка экспертов",
+  [BlockType.TIMELINE]: "Хронология",
+  [BlockType.NOTES]: "Заметки",
+  [BlockType.REGULATION]: "Регулирование",
 }
 
 export function IssueEditorClient({ issue }: IssueEditorClientProps) {
@@ -120,10 +120,10 @@ export function IssueEditorClient({ issue }: IssueEditorClientProps) {
 
       try {
         await reorderSections(issue.id, sectionIds)
-        toast.success("Sections reordered")
+        toast.success("Порядок разделов изменен")
         router.refresh()
       } catch (error) {
-        toast.error("Failed to reorder sections")
+        toast.error("Не удалось изменить порядок разделов")
       }
     }
   }
@@ -143,10 +143,10 @@ export function IssueEditorClient({ issue }: IssueEditorClientProps) {
 
       try {
         await reorderBlocks(sectionId, blockIds)
-        toast.success("Blocks reordered")
+        toast.success("Порядок блоков изменен")
         router.refresh()
       } catch (error) {
-        toast.error("Failed to reorder blocks")
+        toast.error("Не удалось изменить порядок блоков")
       }
     }
   }
@@ -155,10 +155,10 @@ export function IssueEditorClient({ issue }: IssueEditorClientProps) {
     setIsSubmitting(true)
     try {
       await updateIssue(issue.id, formData)
-      toast.success("Issue updated")
+      toast.success("Выпуск обновлен")
       router.refresh()
     } catch (error) {
-      toast.error("Failed to update issue")
+      toast.error("Не удалось обновить выпуск")
     } finally {
       setIsSubmitting(false)
     }
@@ -167,69 +167,69 @@ export function IssueEditorClient({ issue }: IssueEditorClientProps) {
   async function handleCreateSection(formData: FormData) {
     try {
       await createSection(issue.id, formData)
-      toast.success("Section created")
+      toast.success("Раздел создан")
       router.refresh()
     } catch (error) {
-      toast.error("Failed to create section")
+      toast.error("Не удалось создать раздел")
     }
   }
 
   async function handleUpdateSection(sectionId: string, formData: FormData) {
     try {
       await updateSection(sectionId, formData)
-      toast.success("Section updated")
+      toast.success("Раздел обновлен")
       setEditingSection(null)
       router.refresh()
     } catch (error) {
-      toast.error("Failed to update section")
+      toast.error("Не удалось обновить раздел")
     }
   }
 
   async function handleDeleteSection(sectionId: string) {
-    if (!confirm("Are you sure you want to delete this section and all its blocks?")) {
+    if (!confirm("Вы уверены, что хотите удалить этот раздел и все его блоки?")) {
       return
     }
     try {
       await deleteSection(sectionId)
-      toast.success("Section deleted")
+      toast.success("Раздел удален")
       router.refresh()
     } catch (error) {
-      toast.error("Failed to delete section")
+      toast.error("Не удалось удалить раздел")
     }
   }
 
   async function handleAddBlock(sectionId: string, data: { type: BlockType; content: BlockContent }) {
     try {
       await createBlock(sectionId, data)
-      toast.success("Block added")
+      toast.success("Блок добавлен")
       setAddingBlockToSection(null)
       router.refresh()
     } catch (error) {
-      toast.error("Failed to add block")
+      toast.error("Не удалось добавить блок")
     }
   }
 
   async function handleUpdateBlock(blockId: string, data: { type: BlockType; content: BlockContent }) {
     try {
       await updateBlock(blockId, data)
-      toast.success("Block updated")
+      toast.success("Блок обновлен")
       setEditingBlock(null)
       router.refresh()
     } catch (error) {
-      toast.error("Failed to update block")
+      toast.error("Не удалось обновить блок")
     }
   }
 
   async function handleDeleteBlock(blockId: string) {
-    if (!confirm("Are you sure you want to delete this block?")) {
+    if (!confirm("Вы уверены, что хотите удалить этот блок?")) {
       return
     }
     try {
       await deleteBlock(blockId)
-      toast.success("Block deleted")
+      toast.success("Блок удален")
       router.refresh()
     } catch (error) {
-      toast.error("Failed to delete block")
+      toast.error("Не удалось удалить блок")
     }
   }
 
@@ -239,16 +239,18 @@ export function IssueEditorClient({ issue }: IssueEditorClientProps) {
         <div className="flex items-center gap-4">
           <Link href="/admin/issues">
             <Button variant="ghost" size="sm">
-              ← Back
+              ← Назад
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold">Issue #{issue.number}</h1>
+            <h1 className="text-2xl font-bold">Выпуск №{issue.number}</h1>
             <Badge
               variant={issue.status === IssueStatus.PUBLISHED ? "default" : "secondary"}
               className="mt-1"
             >
-              {issue.status.toLowerCase()}
+              {issue.status === 'DRAFT' ? 'черновик' : 
+               issue.status === 'PUBLISHED' ? 'опубликован' : 
+               issue.status === 'ARCHIVED' ? 'в архиве' : issue.status.toLowerCase()}
             </Badge>
           </div>
         </div>
@@ -257,12 +259,12 @@ export function IssueEditorClient({ issue }: IssueEditorClientProps) {
       {/* Issue Details Form */}
       <Card>
         <CardHeader>
-          <CardTitle>Issue Details</CardTitle>
+          <CardTitle>Детали выпуска</CardTitle>
         </CardHeader>
         <CardContent>
           <form action={handleUpdateIssue} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="title">Title</Label>
+              <Label htmlFor="title">Заголовок</Label>
               <Input
                 id="title"
                 name="title"
@@ -272,7 +274,7 @@ export function IssueEditorClient({ issue }: IssueEditorClientProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description">Описание</Label>
               <Textarea
                 id="description"
                 name="description"
@@ -283,21 +285,21 @@ export function IssueEditorClient({ issue }: IssueEditorClientProps) {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="status">Status</Label>
+                <Label htmlFor="status">Статус</Label>
                 <select
                   id="status"
                   name="status"
                   defaultValue={issue.status}
                   className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                 >
-                  <option value={IssueStatus.DRAFT}>Draft</option>
-                  <option value={IssueStatus.PUBLISHED}>Published</option>
-                  <option value={IssueStatus.ARCHIVED}>Archived</option>
+                  <option value={IssueStatus.DRAFT}>Черновик</option>
+                  <option value={IssueStatus.PUBLISHED}>Опубликован</option>
+                  <option value={IssueStatus.ARCHIVED}>В архиве</option>
                 </select>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="slug">Slug</Label>
+                <Label htmlFor="slug">Слаг</Label>
                 <Input
                   id="slug"
                   name="slug"
@@ -309,7 +311,7 @@ export function IssueEditorClient({ issue }: IssueEditorClientProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="coverImage">Cover Image URL</Label>
+              <Label htmlFor="coverImage">URL обложки</Label>
               <Input
                 id="coverImage"
                 name="coverImage"
@@ -320,7 +322,7 @@ export function IssueEditorClient({ issue }: IssueEditorClientProps) {
             </div>
 
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : "Save Changes"}
+              {isSubmitting ? "Сохранение..." : "Сохранить изменения"}
             </Button>
           </form>
         </CardContent>
@@ -331,31 +333,31 @@ export function IssueEditorClient({ issue }: IssueEditorClientProps) {
       {/* Sections */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Sections</h2>
+          <h2 className="text-xl font-semibold">Разделы</h2>
           <Dialog>
             <DialogTrigger render={<Button size="sm" />}>
                 <Plus className="h-4 w-4 mr-2" />
-                Add Section
+                Добавить раздел
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Add New Section</DialogTitle>
+                <DialogTitle>Добавить новый раздел</DialogTitle>
               </DialogHeader>
               <form action={handleCreateSection} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="title">Section Title</Label>
+                  <Label htmlFor="title">Заголовок раздела</Label>
                   <Input
                     id="title"
                     name="title"
-                    placeholder="Enter section title"
+                    placeholder="Введите заголовок раздела"
                     required
                   />
                 </div>
                 <div className="flex justify-end gap-3">
                   <Button type="button" variant="outline" onClick={() => document.body.click()}>
-                    Cancel
+                    Отмена
                   </Button>
-                  <Button type="submit">Add Section</Button>
+                  <Button type="submit">Добавить раздел</Button>
                 </div>
               </form>
             </DialogContent>
@@ -365,7 +367,7 @@ export function IssueEditorClient({ issue }: IssueEditorClientProps) {
         {issue.sections.length === 0 ? (
           <Card>
             <CardContent className="py-12 text-center">
-              <p className="text-muted-foreground">No sections yet. Add your first section above.</p>
+              <p className="text-muted-foreground">Разделов пока нет. Добавьте свой первый раздел выше.</p>
             </CardContent>
           </Card>
         ) : (
@@ -407,14 +409,14 @@ export function IssueEditorClient({ issue }: IssueEditorClientProps) {
                                     defaultValue={section.title}
                                     className="flex-1"
                                   />
-                                  <Button type="submit" size="sm">Save</Button>
+                                  <Button type="submit" size="sm">Сохранить</Button>
                                   <Button
                                     type="button"
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => setEditingSection(null)}
                                   >
-                                    Cancel
+                                    Отмена
                                   </Button>
                                 </form>
                               ) : (
@@ -532,7 +534,7 @@ export function IssueEditorClient({ issue }: IssueEditorClientProps) {
                               onClick={() => setAddingBlockToSection(section.id)}
                             >
                               <Plus className="h-4 w-4 mr-2" />
-                              Add Block
+                              Добавить блок
                             </Button>
                           )}
                         </CardContent>

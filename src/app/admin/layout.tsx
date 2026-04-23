@@ -27,13 +27,13 @@ export default async function AdminLayout({
                 href="/admin/issues"
                 className="text-sm font-bold uppercase tracking-widest text-slate-500 hover:text-slate-900 transition-colors"
               >
-                Issues
+                Выпуски
               </Link>
               <Link
                 href="/admin/users"
                 className="text-sm font-bold uppercase tracking-widest text-slate-500 hover:text-slate-900 transition-colors"
               >
-                Users
+                Пользователи
               </Link>
             </nav>
           </div>
@@ -43,7 +43,10 @@ export default async function AdminLayout({
                 {session.user?.name || session.user?.email}
               </span>
               <span className="text-[10px] font-black uppercase tracking-tighter bg-yellow-400 px-1.5 py-0.5 rounded-sm">
-                {(session.user as any)?.role || 'VIEWER'}
+                {((session.user as any)?.role === 'ADMIN' ? 'АДМИНИСТРАТОР' : 
+                  (session.user as any)?.role === 'EDITOR' ? 'РЕДАКТОР' : 
+                  (session.user as any)?.role === 'READER' ? 'ЧИТАТЕЛЬ' : 
+                  (session.user as any)?.role || 'ГОСТЬ')}
               </span>
             </div>
             <form
@@ -57,7 +60,7 @@ export default async function AdminLayout({
                 type="submit"
                 className="text-sm font-bold text-rose-500 hover:text-rose-600 transition-colors border border-rose-200 px-4 py-2 rounded-full hover:bg-rose-50"
               >
-                Sign out
+                Выйти
               </button>
             </form>
           </div>

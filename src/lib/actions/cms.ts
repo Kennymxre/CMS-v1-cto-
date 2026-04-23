@@ -10,8 +10,15 @@ import { BlockContentSchema } from "@/lib/cms/schemas"
 
 // Utility to generate slug
 function generateSlug(title: string): string {
-  return title
-    .toLowerCase()
+  const rus = "щ   ш  ч  ц  ю  я  ё  ж  ъ  ы  э  а б в г д е з и й к л м н о п р с т у ф х".split(/ +/)
+  const eng = "shh sh ch cz yu ya yo zh `` y e a b v g d e z i j k l m n o p r s t u f x".split(/ +/)
+  
+  let slug = title.toLowerCase()
+  for (let i = 0; i < rus.length; i++) {
+    slug = slug.split(rus[i]).join(eng[i])
+  }
+
+  return slug
     .replace(/[^\w ]+/g, '')
     .replace(/ +/g, '-')
 }
@@ -86,7 +93,7 @@ export async function getIssueBySlug(slug: string) {
 export async function createIssue(formData: FormData) {
   const session = await auth()
   if (!session?.user?.id) {
-    throw new Error("Unauthorized")
+    throw new Error("Неавторизован")
   }
 
   const data = {
@@ -137,7 +144,7 @@ export async function createIssue(formData: FormData) {
 export async function updateIssue(id: string, formData: FormData) {
   const session = await auth()
   if (!session?.user?.id) {
-    throw new Error("Unauthorized")
+    throw new Error("Неавторизован")
   }
 
   const data = {
@@ -185,7 +192,7 @@ export async function updateIssue(id: string, formData: FormData) {
 export async function deleteIssue(id: string) {
   const session = await auth()
   if (!session?.user?.id) {
-    throw new Error("Unauthorized")
+    throw new Error("Неавторизован")
   }
 
   await prisma.digestIssue.delete({ where: { id } })
@@ -198,7 +205,7 @@ export async function deleteIssue(id: string) {
 export async function createSection(issueId: string, formData: FormData) {
   const session = await auth()
   if (!session?.user?.id) {
-    throw new Error("Unauthorized")
+    throw new Error("Неавторизован")
   }
 
   const title = formData.get("title") as string
@@ -231,7 +238,7 @@ export async function createSection(issueId: string, formData: FormData) {
 export async function updateSection(id: string, formData: FormData) {
   const session = await auth()
   if (!session?.user?.id) {
-    throw new Error("Unauthorized")
+    throw new Error("Неавторизован")
   }
 
   const data = {
@@ -265,7 +272,7 @@ export async function updateSection(id: string, formData: FormData) {
 export async function deleteSection(id: string) {
   const session = await auth()
   if (!session?.user?.id) {
-    throw new Error("Unauthorized")
+    throw new Error("Неавторизован")
   }
 
   const section = await prisma.digestSection.findUnique({
@@ -273,7 +280,7 @@ export async function deleteSection(id: string) {
     include: { issue: { select: { id: true, number: true, slug: true } } },
   })
 
-  if (!section) throw new Error("Section not found")
+  if (!section) throw new Error("Раздел не найден")
 
   await prisma.digestSection.delete({ where: { id } })
 
@@ -285,7 +292,7 @@ export async function deleteSection(id: string) {
 export async function reorderSections(issueId: string, sectionIds: string[]) {
   const session = await auth()
   if (!session?.user?.id) {
-    throw new Error("Unauthorized")
+    throw new Error("Неавторизован")
   }
 
   await Promise.all(
@@ -313,7 +320,7 @@ export async function reorderSections(issueId: string, sectionIds: string[]) {
 export async function createBlock(sectionId: string, data: { type: BlockType; content: unknown }) {
   const session = await auth()
   if (!session?.user?.id) {
-    throw new Error("Unauthorized")
+    throw new Error("Неавторизован")
   }
 
   const parsed = CreateBlockSchema.safeParse(data)
@@ -364,7 +371,7 @@ export async function createBlock(sectionId: string, data: { type: BlockType; co
 export async function updateBlock(id: string, data: { type: BlockType; content: unknown }) {
   const session = await auth()
   if (!session?.user?.id) {
-    throw new Error("Unauthorized")
+    throw new Error("Неавторизован")
   }
 
   const parsed = UpdateBlockSchema.safeParse(data)
@@ -408,7 +415,7 @@ export async function updateBlock(id: string, data: { type: BlockType; content: 
 export async function deleteBlock(id: string) {
   const session = await auth()
   if (!session?.user?.id) {
-    throw new Error("Unauthorized")
+    throw new Error("Неавторизован")
   }
 
   const block = await prisma.contentBlock.findUnique({
@@ -416,7 +423,7 @@ export async function deleteBlock(id: string) {
     include: { section: { include: { issue: { select: { number: true, slug: true, id: true } } } } },
   })
 
-  if (!block) throw new Error("Block not found")
+  if (!block) throw new Error("Блок не найден")
 
   await prisma.contentBlock.delete({ where: { id } })
 
@@ -432,7 +439,7 @@ export async function deleteBlock(id: string) {
 export async function reorderBlocks(sectionId: string, blockIds: string[]) {
   const session = await auth()
   if (!session?.user?.id) {
-    throw new Error("Unauthorized")
+    throw new Error("Неавторизован")
   }
 
   await Promise.all(

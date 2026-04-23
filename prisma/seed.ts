@@ -15,7 +15,7 @@ async function main() {
     update: {},
     create: {
       email: 'admin@example.com',
-      name: 'Admin User',
+      name: 'Администратор',
       role: Role.ADMIN,
     },
   })
@@ -25,7 +25,7 @@ async function main() {
     update: {},
     create: {
       email: 'editor@example.com',
-      name: 'Editor User',
+      name: 'Редактор',
       role: Role.EDITOR,
     },
   })
@@ -41,15 +41,15 @@ async function main() {
     data: {
       number: 1,
       slug: 'master-digest-2024',
-      title: 'The Q2 2024 Strategic Briefing',
-      description: 'A comprehensive analysis of market trends, regulatory shifts, and competitive intelligence for the modern enterprise.',
+      title: 'Стратегический брифинг за II квартал 2024 года',
+      description: 'Всесторонний анализ рыночных тенденций, изменений в законодательстве и конкурентной разведки для современного предприятия.',
       status: IssueStatus.PUBLISHED,
       authorId: admin.id,
       coverImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=2426',
       sections: {
         create: [
           {
-            title: 'Hero Highlights',
+            title: 'Главные новости',
             order: 0,
             blocks: {
               create: [
@@ -58,7 +58,7 @@ async function main() {
                   order: 1,
                   content: {
                     type: BlockType.TEXT,
-                    body: "Welcome to the Q2 2024 Strategic Briefing. This quarter, we're seeing an unprecedented convergence of generative AI maturity and global regulatory shifts. This report breaks down the essential data points and insights your team needs to navigate the upcoming months."
+                    body: "Добро пожаловать в стратегический брифинг за II квартал 2024 года. В этом квартале мы наблюдаем беспрецедентное слияние зрелости генеративного ИИ и глобальных регуляторных изменений. В этом отчете представлены основные данные и идеи, необходимые вашей команде для навигации в предстоящие месяцы."
                   }
                 },
                 {
@@ -66,9 +66,9 @@ async function main() {
                   order: 2,
                   content: {
                     type: BlockType.KPI,
-                    label: 'S&P 500 AI Segment',
+                    label: 'Сегмент ИИ в S&P 500',
                     value: '+24.3%',
-                    trend: 'Above Average',
+                    trend: 'Выше среднего',
                     trendDirection: 'up'
                   }
                 }
@@ -76,7 +76,7 @@ async function main() {
             }
           },
           {
-            title: 'Market Performance',
+            title: 'Показатели рынка',
             order: 1,
             blocks: {
               create: [
@@ -88,8 +88,8 @@ async function main() {
                     items: [
                       { label: 'NASDAQ 100', value: '18,210.45', change: '+1.8%', trend: 'up' },
                       { label: 'DOW JONES', value: '38,904.04', change: '-0.2%', trend: 'down' },
-                      { label: 'GOLD', value: '$2,320.10', change: '+0.5%', trend: 'up' },
-                      { label: 'CRUDE OIL', value: '$84.32', change: '-1.4%', trend: 'down' }
+                      { label: 'ЗОЛОТО', value: '$2,320.10', change: '+0.5%', trend: 'up' },
+                      { label: 'НЕФТЬ BRENT', value: '$84.32', change: '-1.4%', trend: 'down' }
                     ]
                   }
                 },
@@ -98,13 +98,13 @@ async function main() {
                   order: 2,
                   content: {
                     type: BlockType.CHART,
-                    title: 'Quarterly Sector Growth',
+                    title: 'Квартальный рост секторов',
                     chartType: 'area',
                     data: [
-                      { name: 'Jan', tech: 400, energy: 240, health: 320 },
-                      { name: 'Feb', tech: 300, energy: 139, health: 280 },
-                      { name: 'Mar', tech: 500, energy: 980, health: 390 },
-                      { name: 'Apr', tech: 680, energy: 390, health: 480 },
+                      { name: 'Янв', tech: 400, energy: 240, health: 320 },
+                      { name: 'Фев', tech: 300, energy: 139, health: 280 },
+                      { name: 'Мар', tech: 500, energy: 980, health: 390 },
+                      { name: 'Апр', tech: 680, energy: 390, health: 480 },
                     ]
                   }
                 }
@@ -112,7 +112,7 @@ async function main() {
             }
           },
           {
-            title: 'Regulatory Landscape',
+            title: 'Нормативно-правовая база',
             order: 2,
             blocks: {
               create: [
@@ -121,10 +121,10 @@ async function main() {
                   order: 1,
                   content: {
                     type: BlockType.REGULATION,
-                    title: 'EU AI Act: Final Implementation',
-                    status: 'Ratified',
+                    title: 'Закон ЕС об ИИ: Окончательная реализация',
+                    status: 'Ратифицирован',
                     impact: 'high',
-                    summary: 'The European Parliament has officially ratified the AI Act. Organizations must now classify their AI systems by risk level, with "High Risk" systems requiring strict transparency and data governance measures starting Q4 2024.'
+                    summary: 'Европейский парламент официально ратифицировал Закон об ИИ. Организации теперь должны классифицировать свои системы ИИ по уровню риска, при этом системы «высокого риска» потребуют строгих мер прозрачности и управления данными, начиная с 4 квартала 2024 года.'
                   }
                 },
                 {
@@ -132,12 +132,12 @@ async function main() {
                   order: 2,
                   content: {
                     type: BlockType.NOTES,
-                    title: 'Action Items for Compliance',
+                    title: 'Действия по обеспечению соответствия',
                     items: [
-                      'Conduct an internal audit of all LLM integrations.',
-                      'Assign a dedicated Data Privacy Officer for EU operations.',
-                      'Establish a bias-monitoring framework for customer-facing models.',
-                      'Review vendor contracts for data indemnity clauses.'
+                      'Провести внутренний аудит всех интеграций LLM.',
+                      'Назначить ответственного за конфиденциальность данных для операций в ЕС.',
+                      'Разработать систему мониторинга предвзятости для моделей, ориентированных на клиентов.',
+                      'Пересмотреть контракты с поставщиками на предмет положений о возмещении ущерба данным.'
                     ]
                   }
                 }
@@ -145,7 +145,7 @@ async function main() {
             }
           },
           {
-            title: 'Competitive Analysis',
+            title: 'Конкурентный анализ',
             order: 3,
             blocks: {
               create: [
@@ -155,9 +155,9 @@ async function main() {
                   content: {
                     type: BlockType.TIMELINE,
                     items: [
-                      { date: 'March 12', title: 'Competitor A Launches "Nexus"', description: 'A direct competitor to our flagship product with integrated agentic workflows.' },
-                      { date: 'April 05', title: 'Major M&A in Fintech', description: 'Stripe acquires Bridge to bolster stablecoin infrastructure.' },
-                      { date: 'May 18', title: 'OpenAI Reveals GPT-5 Alpha', description: 'Early benchmarks suggest a 40% improvement in complex reasoning tasks.' }
+                      { date: '12 марта', title: 'Конкурент А запускает «Nexus»', description: 'Прямой конкурент нашему флагманскому продукту с интегрированными агентными рабочими процессами.' },
+                      { date: '05 апреля', title: 'Крупная сделка M&A в сфере финтеха', description: 'Stripe покупает Bridge для укрепления инфраструктуры стейблкоинов.' },
+                      { date: '18 мая', title: 'OpenAI представляет GPT-5 Alpha', description: 'Первые тесты показывают улучшение на 40% в решении сложных логических задач.' }
                     ]
                   }
                 },
@@ -166,16 +166,16 @@ async function main() {
                   order: 2,
                   content: {
                     type: BlockType.QUOTE,
-                    text: "Innovation is not just about moving fast; it's about moving in the right direction when the ground is shifting beneath you.",
-                    author: "Satya Nadella",
-                    source: "Microsoft Vision Summit"
+                    text: "Инновации — это не только высокая скорость; это движение в правильном направлении, когда почва уходит у вас из-под ног.",
+                    author: "Сатья Наделла",
+                    source: "Саммит видения Microsoft"
                   }
                 }
               ]
             }
           },
           {
-            title: 'The Expert Panel',
+            title: 'Панель экспертов',
             order: 4,
             blocks: {
               create: [
@@ -185,9 +185,9 @@ async function main() {
                   content: {
                     type: BlockType.EXPERT_GRID,
                     experts: [
-                      { name: 'Dr. Aris Thorne', role: 'Chief Scientist, NeuralPath', avatar: 'https://i.pravatar.cc/150?u=aris', insight: 'The move from RAG to long-context windows will simplify developer stacks but increase compute costs.' },
-                      { name: 'Sarah Jenkins', role: 'Venture Partner, Sequoia', avatar: 'https://i.pravatar.cc/150?u=sarah', insight: 'We are looking for companies that own the data loop, not just the model wrapper.' },
-                      { name: 'Marcus Chen', role: 'CTO, CyberSec Global', avatar: 'https://i.pravatar.cc/150?u=marcus', insight: 'Security is the biggest bottleneck for enterprise AI adoption today. Solve that, and you win.' }
+                      { name: 'Д-р Арис Торн', role: 'Главный ученый, NeuralPath', avatar: 'https://i.pravatar.cc/150?u=aris', insight: 'Переход от RAG к окнам с длинным контекстом упростит стек разработки, но увеличит затраты на вычисления.' },
+                      { name: 'Сара Дженкинс', role: 'Венчурный партнер, Sequoia', avatar: 'https://i.pravatar.cc/150?u=sarah', insight: 'Мы ищем компании, которые владеют циклом данных, а не просто оболочкой модели.' },
+                      { name: 'Маркус Чен', role: 'Технический директор, CyberSec Global', avatar: 'https://i.pravatar.cc/150?u=marcus', insight: 'Безопасность — это самое узкое место для внедрения ИИ на предприятиях сегодня. Решите эту проблему, и вы победите.' }
                     ]
                   }
                 },

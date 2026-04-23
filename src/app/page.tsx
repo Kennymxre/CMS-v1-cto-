@@ -22,7 +22,7 @@ export default async function HomePage() {
                 href="/admin/issues"
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
-                Admin
+                Админ-панель
               </Link>
             </nav>
           </div>
@@ -36,24 +36,24 @@ export default async function HomePage() {
             Daily Digest
           </h1>
           <p className="text-xl text-muted-foreground">
-            Curated content delivered to your inbox
+            Курируемый контент прямо в ваш почтовый ящик
           </p>
         </div>
       </section>
 
       {/* Issues List */}
       <main className="container max-w-3xl py-12">
-        <h2 className="text-2xl font-semibold mb-8">Recent Issues</h2>
+        <h2 className="text-2xl font-semibold mb-8">Последние выпуски</h2>
 
         {issues.length === 0 ? (
           <Card>
             <CardContent className="py-12 text-center">
-              <p className="text-muted-foreground">No published issues yet.</p>
+              <p className="text-muted-foreground">Опубликованных выпусков пока нет.</p>
               <Link
                 href="/admin/issues/new"
                 className="mt-4 inline-block text-primary hover:underline"
               >
-                Create your first issue
+                Создайте свой первый выпуск
               </Link>
             </CardContent>
           </Card>
@@ -78,11 +78,11 @@ export default async function HomePage() {
                   )}
                   <CardContent className="pt-4">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                      <span className="font-medium">#{issue.number}</span>
+                      <span className="font-medium">Выпуск #{issue.number}</span>
                       <span>•</span>
                       {issue.publishedAt && (
                         <time dateTime={issue.publishedAt.toISOString()}>
-                          {new Date(issue.publishedAt).toLocaleDateString("en-US", {
+                          {new Date(issue.publishedAt).toLocaleDateString("ru-RU", {
                             month: "short",
                             day: "numeric",
                             year: "numeric",
@@ -112,7 +112,7 @@ export default async function HomePage() {
                         {issue.author.name}
                       </span>
                       <Badge variant="secondary" className="ml-auto text-xs">
-                        {issue._count.sections} sections
+                        {issue._count.sections} разделов
                       </Badge>
                     </div>
                   </CardContent>
