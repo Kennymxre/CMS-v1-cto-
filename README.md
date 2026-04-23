@@ -1,5 +1,30 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Local Setup
+
+To set up the project locally, follow these steps:
+
+1. **Clone the repository.**
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+3. **Set up environment variables:**
+   Copy `.env.example` to `.env` and update the values as needed.
+   ```bash
+   cp .env.example .env
+   ```
+4. **Prepare the database:**
+   Ensure you have a PostgreSQL instance running and the `DATABASE_URL` in `.env` is correct. Then run:
+   ```bash
+   npx prisma generate
+   npx prisma db push
+   ```
+5. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
+
 ## Getting Started
 
 First, run the development server:
