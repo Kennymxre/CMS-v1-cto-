@@ -20,41 +20,41 @@ export default async function IssuesPage() {
     <div className="space-y-12 max-w-7xl mx-auto">
       <div className="flex items-end justify-between border-b-4 border-slate-900 pb-6">
         <div>
-          <h1 className="text-5xl font-black tracking-tighter">Issues</h1>
+          <h1 className="text-5xl font-black tracking-tighter">Выпуски</h1>
           <p className="text-slate-500 mt-2 font-medium text-lg italic">
-            Management dashboard for your editorial content.
+            Панель управления вашим редакционным контентом.
           </p>
         </div>
         <Link href="/admin/issues/new">
           <Button className="bg-yellow-400 hover:bg-yellow-500 text-black font-black px-8 h-14 rounded-full text-lg shadow-lg transition-transform active:scale-95">
             <Plus className="h-6 w-6 mr-2" strokeWidth={3} />
-            New Issue
+            Новый выпуск
           </Button>
         </Link>
       </div>
 
       <Card className="rounded-[32px] border-2 border-slate-200 shadow-xl overflow-hidden">
         <CardHeader className="bg-slate-50/50 border-b border-slate-100 px-8 py-6">
-          <CardTitle className="text-xl font-black uppercase tracking-widest text-slate-400">All Content</CardTitle>
+          <CardTitle className="text-xl font-black uppercase tracking-widest text-slate-400">Весь контент</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           {issues.length === 0 ? (
             <div className="text-center py-24">
-              <p className="text-2xl text-slate-300 font-bold italic">No issues found in the archive.</p>
+              <p className="text-2xl text-slate-300 font-bold italic">В архиве не найдено ни одного выпуска.</p>
               <Link href="/admin/issues/new" className="mt-8 inline-block">
-                <Button variant="outline" className="rounded-full px-8 h-12 border-2">Create your first issue</Button>
+                <Button variant="outline" className="rounded-full px-8 h-12 border-2">Создайте свой первый выпуск</Button>
               </Link>
             </div>
           ) : (
             <Table>
               <TableHeader className="bg-slate-50/30">
                 <TableRow className="hover:bg-transparent border-b-2">
-                  <TableHead className="w-24 px-8 py-4 font-black uppercase tracking-tighter text-slate-900">No.</TableHead>
-                  <TableHead className="py-4 font-black uppercase tracking-tighter text-slate-900">Title</TableHead>
-                  <TableHead className="py-4 font-black uppercase tracking-tighter text-slate-900">Status</TableHead>
-                  <TableHead className="py-4 font-black uppercase tracking-tighter text-slate-900">Slug</TableHead>
-                  <TableHead className="py-4 font-black uppercase tracking-tighter text-slate-900">Created</TableHead>
-                  <TableHead className="text-right px-8 py-4 font-black uppercase tracking-tighter text-slate-900">Control</TableHead>
+                  <TableHead className="w-24 px-8 py-4 font-black uppercase tracking-tighter text-slate-900">№</TableHead>
+                  <TableHead className="py-4 font-black uppercase tracking-tighter text-slate-900">Заголовок</TableHead>
+                  <TableHead className="py-4 font-black uppercase tracking-tighter text-slate-900">Статус</TableHead>
+                  <TableHead className="py-4 font-black uppercase tracking-tighter text-slate-900">Слаг</TableHead>
+                  <TableHead className="py-4 font-black uppercase tracking-tighter text-slate-900">Создан</TableHead>
+                  <TableHead className="text-right px-8 py-4 font-black uppercase tracking-tighter text-slate-900">Управление</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -73,14 +73,16 @@ export default async function IssuesPage() {
                     </TableCell>
                     <TableCell className="py-6">
                       <Badge variant="outline" className={`px-4 py-1 rounded-full font-black text-[10px] uppercase tracking-widest ${statusColors[issue.status]}`}>
-                        {issue.status}
+                        {issue.status === 'DRAFT' ? 'ЧЕРНОВИК' : 
+                         issue.status === 'PUBLISHED' ? 'ОПУБЛИКОВАН' : 
+                         issue.status === 'ARCHIVED' ? 'В АРХИВЕ' : issue.status}
                       </Badge>
                     </TableCell>
                     <TableCell className="py-6 font-mono text-xs text-slate-400">
                       /{issue.slug}
                     </TableCell>
                     <TableCell className="py-6 text-slate-500 font-bold">
-                      {new Date(issue.createdAt).toLocaleDateString("en-US", { month: 'short', day: 'numeric', year: 'numeric' })}
+                      {new Date(issue.createdAt).toLocaleDateString("ru-RU", { month: 'short', day: 'numeric', year: 'numeric' })}
                     </TableCell>
                     <TableCell className="text-right px-8 py-6">
                       <Link href={`/admin/issues/${issue.id}`}>

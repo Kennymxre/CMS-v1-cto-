@@ -22,20 +22,20 @@ interface BlockEditorProps {
 }
 
 const blockTypeOptions = [
-  { value: BlockType.TEXT, label: "Text" },
-  { value: BlockType.IMAGE, label: "Image" },
-  { value: BlockType.LINK, label: "Link" },
-  { value: BlockType.QUOTE, label: "Quote" },
-  { value: BlockType.CODE, label: "Code" },
-  { value: BlockType.DIVIDER, label: "Divider" },
+  { value: BlockType.TEXT, label: "Текст" },
+  { value: BlockType.IMAGE, label: "Изображение" },
+  { value: BlockType.LINK, label: "Ссылка" },
+  { value: BlockType.QUOTE, label: "Цитата" },
+  { value: BlockType.CODE, label: "Код" },
+  { value: BlockType.DIVIDER, label: "Разделитель" },
   { value: BlockType.KPI, label: "KPI" },
-  { value: BlockType.CHART, label: "Chart" },
-  { value: BlockType.NEWS_CARD, label: "News Card" },
-  { value: BlockType.MARKET_NEWS, label: "Market News" },
-  { value: BlockType.EXPERT_GRID, label: "Expert Grid" },
-  { value: BlockType.TIMELINE, label: "Timeline" },
-  { value: BlockType.NOTES, label: "Notes" },
-  { value: BlockType.REGULATION, label: "Regulation" },
+  { value: BlockType.CHART, label: "График" },
+  { value: BlockType.NEWS_CARD, label: "Карточка новостей" },
+  { value: BlockType.MARKET_NEWS, label: "Новости рынка" },
+  { value: BlockType.EXPERT_GRID, label: "Сетка экспертов" },
+  { value: BlockType.TIMELINE, label: "Хронология" },
+  { value: BlockType.NOTES, label: "Заметки" },
+  { value: BlockType.REGULATION, label: "Регулирование" },
 ]
 
 interface ContentState {
@@ -94,7 +94,7 @@ export function BlockEditor({ initialData, sectionId, onSave, onCancel }: BlockE
               const parsed = JSON.parse(content.jsonContent)
               finalContent = { ...parsed, type: blockType }
           } catch (e) {
-              alert("Invalid JSON content")
+              alert("Некорректный JSON контент")
               return
           }
       }
@@ -110,12 +110,12 @@ export function BlockEditor({ initialData, sectionId, onSave, onCancel }: BlockE
       case BlockType.TEXT:
         return (
           <div className="space-y-2">
-            <Label htmlFor="body">Content</Label>
+            <Label htmlFor="body">Контент</Label>
             <Textarea
               id="body"
               value={content.body || ""}
               onChange={(e) => updateContent("body", e.target.value)}
-              placeholder="Enter text content..."
+              placeholder="Введите текстовый контент..."
               rows={6}
               className="resize-y"
             />
@@ -126,7 +126,7 @@ export function BlockEditor({ initialData, sectionId, onSave, onCancel }: BlockE
         return (
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="url">Image URL</Label>
+              <Label htmlFor="url">URL изображения</Label>
               <Input
                 id="url"
                 value={content.url || ""}
@@ -135,21 +135,21 @@ export function BlockEditor({ initialData, sectionId, onSave, onCancel }: BlockE
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="alt">Alt Text</Label>
+              <Label htmlFor="alt">Альтернативный текст</Label>
               <Input
                 id="alt"
                 value={content.alt || ""}
                 onChange={(e) => updateContent("alt", e.target.value)}
-                placeholder="Describe the image"
+                placeholder="Опишите изображение"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="caption">Caption (optional)</Label>
+              <Label htmlFor="caption">Подпись (необязательно)</Label>
               <Input
                 id="caption"
                 value={content.caption || ""}
                 onChange={(e) => updateContent("caption", e.target.value)}
-                placeholder="Image caption"
+                placeholder="Подпись к изображению"
               />
             </div>
           </div>
@@ -168,12 +168,12 @@ export function BlockEditor({ initialData, sectionId, onSave, onCancel }: BlockE
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="title">Title</Label>
+              <Label htmlFor="title">Заголовок</Label>
               <Input
                 id="title"
                 value={content.title || ""}
                 onChange={(e) => updateContent("title", e.target.value)}
-                placeholder="Link title"
+                placeholder="Заголовок ссылки"
               />
             </div>
           </div>
@@ -183,44 +183,44 @@ export function BlockEditor({ initialData, sectionId, onSave, onCancel }: BlockE
         return (
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="label">Label</Label>
+              <Label htmlFor="label">Метка</Label>
               <Input
                 id="label"
                 value={content.label || ""}
                 onChange={(e) => updateContent("label", e.target.value)}
-                placeholder="e.g. Total Revenue"
+                placeholder="напр. Общая выручка"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="value">Value</Label>
+              <Label htmlFor="value">Значение</Label>
               <Input
                 id="value"
                 value={content.value || ""}
                 onChange={(e) => updateContent("value", e.target.value)}
-                placeholder="e.g. $4.2M"
+                placeholder="напр. $4.2M"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
                <div className="space-y-2">
-                <Label htmlFor="trend">Trend (optional)</Label>
+                <Label htmlFor="trend">Тренд (необязательно)</Label>
                 <Input
                   id="trend"
                   value={content.trend || ""}
                   onChange={(e) => updateContent("trend", e.target.value)}
-                  placeholder="e.g. +12%"
+                  placeholder="напр. +12%"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="trendDirection">Trend Direction</Label>
+                <Label htmlFor="trendDirection">Направление тренда</Label>
                 <select
                   id="trendDirection"
                   value={content.trendDirection || "neutral"}
                   onChange={(e) => updateContent("trendDirection", e.target.value)}
                   className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                 >
-                  <option value="up">Up</option>
-                  <option value="down">Down</option>
-                  <option value="neutral">Neutral</option>
+                  <option value="up">Вверх</option>
+                  <option value="down">Вниз</option>
+                  <option value="neutral">Нейтрально</option>
                 </select>
               </div>
             </div>
@@ -231,26 +231,26 @@ export function BlockEditor({ initialData, sectionId, onSave, onCancel }: BlockE
         return (
           <div className="space-y-4">
              <div className="space-y-2">
-              <Label htmlFor="title">Title</Label>
+              <Label htmlFor="title">Заголовок</Label>
               <Input
                 id="title"
                 value={content.title || ""}
                 onChange={(e) => updateContent("title", e.target.value)}
-                placeholder="News title"
+                placeholder="Заголовок новости"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description">Описание</Label>
               <Textarea
                 id="description"
                 value={content.description || ""}
                 onChange={(e) => updateContent("description", e.target.value)}
-                placeholder="News description"
+                placeholder="Описание новости"
                 rows={3}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="image">Image URL</Label>
+              <Label htmlFor="image">URL изображения</Label>
               <Input
                 id="image"
                 value={content.image || ""}
@@ -259,12 +259,12 @@ export function BlockEditor({ initialData, sectionId, onSave, onCancel }: BlockE
               />
             </div>
              <div className="space-y-2">
-              <Label htmlFor="category">Category</Label>
+              <Label htmlFor="category">Категория</Label>
               <Input
                 id="category"
                 value={content.category || ""}
                 onChange={(e) => updateContent("category", e.target.value)}
-                placeholder="e.g. Business"
+                placeholder="напр. Бизнес"
               />
             </div>
           </div>
@@ -278,7 +278,7 @@ export function BlockEditor({ initialData, sectionId, onSave, onCancel }: BlockE
       case BlockType.REGULATION:
         return (
           <div className="space-y-2">
-            <Label htmlFor="jsonContent">JSON Content</Label>
+            <Label htmlFor="jsonContent">JSON контент</Label>
             <Textarea
               id="jsonContent"
               value={content.jsonContent || ""}
@@ -288,7 +288,7 @@ export function BlockEditor({ initialData, sectionId, onSave, onCancel }: BlockE
               className="font-mono text-xs"
             />
             <p className="text-[10px] text-muted-foreground italic">
-              Note: Complex blocks are currently edited via JSON for precision.
+              Примечание: Сложные блоки в данный момент редактируются через JSON для точности.
             </p>
           </div>
         )
@@ -296,35 +296,35 @@ export function BlockEditor({ initialData, sectionId, onSave, onCancel }: BlockE
       case BlockType.DIVIDER:
         return (
           <div className="space-y-2">
-            <Label htmlFor="style">Style</Label>
+            <Label htmlFor="style">Стиль</Label>
             <select
               id="style"
               value={content.style || "simple"}
               onChange={(e) => updateContent("style", e.target.value)}
               className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
             >
-              <option value="simple">Simple Line</option>
-              <option value="dots">Dots</option>
-              <option value="stars">Stars</option>
-              <option value="dash">Dashes</option>
+              <option value="simple">Простая линия</option>
+              <option value="dots">Точки</option>
+              <option value="stars">Звезды</option>
+              <option value="dash">Пунктир</option>
             </select>
           </div>
         )
 
       default:
-        return <p className="text-muted-foreground">Select a block type to edit content</p>
+        return <p className="text-muted-foreground">Выберите тип блока для редактирования контента</p>
     }
   }
 
   return (
     <Card className="border-2 border-slate-200 rounded-[20px] shadow-lg overflow-hidden">
       <CardHeader className="bg-slate-50 border-b">
-        <CardTitle className="text-lg font-black uppercase tracking-widest">{initialData?.id ? "Update Component" : "Add Component"}</CardTitle>
+        <CardTitle className="text-lg font-black uppercase tracking-widest">{initialData?.id ? "Обновить компонент" : "Добавить компонент"}</CardTitle>
       </CardHeader>
       <CardContent className="p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="type" className="font-bold">Component Type</Label>
+            <Label htmlFor="type" className="font-bold">Тип компонента</Label>
             <select
               id="type"
               value={blockType}
@@ -345,15 +345,16 @@ export function BlockEditor({ initialData, sectionId, onSave, onCancel }: BlockE
 
           <div className="flex justify-end gap-3 pt-4">
             <Button type="button" variant="ghost" onClick={onCancel} className="rounded-full font-bold">
-              Cancel
+              Отмена
             </Button>
             <Button type="submit" disabled={isSubmitting} className="bg-slate-900 hover:bg-slate-800 text-white rounded-full px-8 font-bold">
-              {isSubmitting ? "Processing..." : initialData?.id ? "Apply Changes" : "Create Component"}
+              {isSubmitting ? "Обработка..." : initialData?.id ? "Применить изменения" : "Создать компонент"}
             </Button>
           </div>
         </form>
       </CardContent>
     </Card>
+
   )
 }
 

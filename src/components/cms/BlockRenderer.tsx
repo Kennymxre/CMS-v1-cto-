@@ -199,7 +199,7 @@ export function BlockRenderer({ content, isPreview = false }: BlockRendererProps
     default:
       return (
         <div className="p-8 bg-destructive/5 text-destructive rounded-[20px] border border-destructive/20 font-medium">
-          Unknown block type: {content.type}
+          Неизвестный тип блока: {content.type}
         </div>
       )
   }

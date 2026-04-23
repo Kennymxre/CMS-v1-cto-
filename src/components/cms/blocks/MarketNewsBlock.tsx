@@ -7,7 +7,7 @@ export default function MarketNewsBlock({ content }: { content: MarketNewsBlockC
   return (
     <div className="bg-slate-900 p-8 rounded-[24px] text-white shadow-xl">
       <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-slate-400 mb-6 border-b border-slate-800 pb-4">
-        Market Pulse
+        Пульс рынка
       </h3>
       <div className="flex flex-col gap-4">
         {items.map((item, index) => {

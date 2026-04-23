@@ -17,6 +17,19 @@ export default function RegulationBlock({ content }: { content: RegulationBlockC
     }
   }
 
+  const getImpactLabel = () => {
+    switch (impact) {
+      case "critical":
+        return "Критическое"
+      case "high":
+        return "Высокое"
+      case "medium":
+        return "Среднее"
+      default:
+        return "Низкое"
+    }
+  }
+
   return (
     <div className="my-10 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-md">
       <div className="flex items-center justify-between bg-slate-50 px-6 py-4 border-b border-slate-200">
@@ -25,20 +38,20 @@ export default function RegulationBlock({ content }: { content: RegulationBlockC
           <h4 className="font-bold text-slate-900 tracking-tight">{title}</h4>
         </div>
         <div className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border ${getImpactColor()}`}>
-          {impact} impact
+          Влияние: {getImpactLabel()}
         </div>
       </div>
       <div className="p-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="md:col-span-1">
-            <div className="text-[10px] font-bold text-slate-400 uppercase mb-1">Status</div>
+            <div className="text-[10px] font-bold text-slate-400 uppercase mb-1">Статус</div>
             <div className="flex items-center gap-2 text-sm font-semibold text-slate-700">
               <ShieldCheckIcon className="w-4 h-4 text-emerald-500" />
               {status}
             </div>
           </div>
           <div className="md:col-span-3">
-            <div className="text-[10px] font-bold text-slate-400 uppercase mb-1">Summary</div>
+            <div className="text-[10px] font-bold text-slate-400 uppercase mb-1">Резюме</div>
             <p className="text-sm text-slate-600 leading-relaxed">
               {summary}
             </p>

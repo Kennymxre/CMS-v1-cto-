@@ -133,16 +133,16 @@ export type BlockContent = z.infer<typeof BlockContentSchema>
 
 // Form schemas
 export const DigestIssueFormSchema = z.object({
-  title: z.string().min(1, "Title is required"),
+  title: z.string().min(1, "Заголовок обязателен"),
   description: z.string().optional(),
   status: z.nativeEnum(IssueStatus),
-  coverImage: z.string().url().optional().or(z.literal("")),
+  coverImage: z.string().url("Некорректная ссылка").optional().or(z.literal("")),
   number: z.number().int().positive().optional(),
-  slug: z.string().min(1, "Slug is required").optional(),
+  slug: z.string().min(1, "Слаг обязателен").optional(),
 })
 
 export const DigestSectionFormSchema = z.object({
-  title: z.string().min(1, "Section title is required"),
+  title: z.string().min(1, "Заголовок раздела обязателен"),
   order: z.number().int().optional(),
 })
 

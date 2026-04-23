@@ -13,12 +13,12 @@ export async function generateMetadata({ params }: IssuePageProps) {
   const issue = await getIssueBySlug(slug)
 
   if (!issue) {
-    return { title: "Issue Not Found" }
+    return { title: "Выпуск не найден" }
   }
 
   return {
-    title: `${issue.title} | Premium Editorial`,
-    description: issue.description || `Digest Issue #${issue.number}`,
+    title: `${issue.title} | Daily Digest`,
+    description: issue.description || `Выпуск дайджеста №${issue.number}`,
   }
 }
 
@@ -36,7 +36,7 @@ export default async function IssuePage({ params }: IssuePageProps) {
       <nav className="sticky top-6 z-50 flex justify-center px-4 pointer-events-none">
         <div className="flex items-center gap-1 p-1.5 bg-white/80 backdrop-blur-xl border border-slate-200 rounded-full shadow-2xl pointer-events-auto overflow-x-auto no-scrollbar max-w-full">
           <a href="#hero" className="px-4 py-2 text-sm font-bold rounded-full hover:bg-slate-100 transition-colors whitespace-nowrap">
-            Top
+            Вверх
           </a>
           {issue.sections.map((section) => (
             <a
@@ -57,9 +57,9 @@ export default async function IssuePage({ params }: IssuePageProps) {
             <div className="space-y-4 max-w-4xl">
               <div className="flex items-center justify-center gap-3 mb-6">
                 <span className="px-3 py-1 bg-yellow-400 text-black text-xs font-black uppercase tracking-[0.2em] rounded-sm">
-                  Premium Edition
+                  Премиум-издание
                 </span>
-                <span className="text-slate-400 font-mono text-sm">Issue No. {issue.number}</span>
+                <span className="text-slate-400 font-mono text-sm">Выпуск №{issue.number}</span>
               </div>
               <h1 className="text-6xl md:text-8xl font-black tracking-tight leading-[0.9] text-slate-950">
                 {issue.title}
@@ -87,7 +87,7 @@ export default async function IssuePage({ params }: IssuePageProps) {
             {/* Featured Quote Overlay or Accent */}
             <div className="mt-12 flex flex-col items-center gap-4">
                <div className="w-12 h-1.5 bg-yellow-400 rounded-full" />
-               <p className="text-sm uppercase tracking-[0.3em] font-bold text-slate-400">Scroll to explore</p>
+               <p className="text-sm uppercase tracking-[0.3em] font-bold text-slate-400">Листайте, чтобы изучить</p>
             </div>
           </div>
         </div>
@@ -132,7 +132,7 @@ export default async function IssuePage({ params }: IssuePageProps) {
 
         {issue.sections.length === 0 && (
           <div className="container text-center py-32">
-            <p className="text-2xl text-slate-400 font-medium">This issue is currently empty.</p>
+            <p className="text-2xl text-slate-400 font-medium">В этом выпуске пока нет контента.</p>
           </div>
         )}
       </main>
@@ -144,23 +144,23 @@ export default async function IssuePage({ params }: IssuePageProps) {
             <div className="space-y-6">
               <h3 className="text-3xl font-black tracking-tighter">Daily Digest<span className="text-yellow-400">.</span></h3>
               <p className="text-slate-400 max-w-xs text-lg">
-                Premium insights for the modern professional, delivered with editorial excellence.
+                Премиальные идеи для современного профессионала, представленные с редакционным совершенством.
               </p>
             </div>
             <div className="flex gap-16">
                <div className="space-y-4">
-                 <h4 className="font-bold uppercase tracking-widest text-xs text-slate-500">Navigation</h4>
+                 <h4 className="font-bold uppercase tracking-widest text-xs text-slate-500">Навигация</h4>
                  <ul className="space-y-2 font-medium">
-                   <li><a href="/" className="hover:text-yellow-400 transition-colors">Home</a></li>
-                   <li><a href="/issues" className="hover:text-yellow-400 transition-colors">Archive</a></li>
-                   <li><a href="/about" className="hover:text-yellow-400 transition-colors">About</a></li>
+                   <li><a href="/" className="hover:text-yellow-400 transition-colors">Главная</a></li>
+                   <li><a href="/issues" className="hover:text-yellow-400 transition-colors">Архив</a></li>
+                   <li><a href="/about" className="hover:text-yellow-400 transition-colors">О проекте</a></li>
                  </ul>
                </div>
                <div className="space-y-4">
-                 <h4 className="font-bold uppercase tracking-widest text-xs text-slate-500">Admin</h4>
+                 <h4 className="font-bold uppercase tracking-widest text-xs text-slate-500">Админ-панель</h4>
                  <ul className="space-y-2 font-medium">
-                   <li><a href="/admin" className="hover:text-yellow-400 transition-colors">Dashboard</a></li>
-                   <li><a href="/admin/issues" className="hover:text-yellow-400 transition-colors">Management</a></li>
+                   <li><a href="/admin" className="hover:text-yellow-400 transition-colors">Панель управления</a></li>
+                   <li><a href="/admin/issues" className="hover:text-yellow-400 transition-colors">Управление</a></li>
                  </ul>
                </div>
             </div>
@@ -168,8 +168,8 @@ export default async function IssuePage({ params }: IssuePageProps) {
           <div className="mt-24 pt-8 border-t border-slate-900 flex justify-between items-center text-slate-500 text-sm font-medium">
             <p>© {new Date().getFullYear()} Daily Digest Media Group.</p>
             <div className="flex gap-6">
-              <a href="#" className="hover:text-white transition-colors">Privacy</a>
-              <a href="#" className="hover:text-white transition-colors">Terms</a>
+              <a href="#" className="hover:text-white transition-colors">Конфиденциальность</a>
+              <a href="#" className="hover:text-white transition-colors">Условия</a>
             </div>
           </div>
         </div>
