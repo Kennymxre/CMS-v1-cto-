@@ -16,12 +16,19 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
+  role          Role      @default(VIEWER)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
   accounts Account[]
   sessions Session[]
   issues   DigestIssue[]
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+  VIEWER
 }
 
 model Account {
@@ -73,11 +80,17 @@ enum BlockType {
   QUOTE
   CODE
   DIVIDER
+  KPI
+  CHART
+  NEWS_CARD
+  MARKET_NEWS
+  EXPERT_GRID
 }
 
 model DigestIssue {
   id          String      @id @default(cuid())
   number      Int         @unique
+  slug        String      @unique
   title       String
   description String?     @db.Text
   status      IssueStatus @default(DRAFT)
@@ -93,6 +106,7 @@ model DigestIssue {
 
   @@index([status])
   @@index([number])
+  @@index([slug])
 }
 
 model DigestSection {

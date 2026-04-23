@@ -8,6 +8,14 @@ import { CreateIssueSchema, UpdateIssueSchema, CreateSectionSchema, UpdateSectio
 import { IssueStatus, BlockType } from "@prisma/client"
 import { BlockContentSchema } from "@/lib/cms/schemas"
 
+// Utility to generate slug
+function generateSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^\w ]+/g, '')
+    .replace(/ +/g, '-')
+}
+
 // Issue Actions
 export async function getIssues(status?: IssueStatus) {
   return prisma.digestIssue.findMany({
@@ -58,6 +66,23 @@ export async function getIssueByNumber(number: number) {
   })
 }
 
+export async function getIssueBySlug(slug: string) {
+  return prisma.digestIssue.findUnique({
+    where: { slug },
+    include: {
+      author: true,
+      sections: {
+        orderBy: { order: "asc" },
+        include: {
+          blocks: {
+            orderBy: { order: "asc" },
+          },
+        },
+      },
+    },
+  })
+}
+
 export async function createIssue(formData: FormData) {
   const session = await auth()
   if (!session?.user?.id) {
@@ -70,6 +95,7 @@ export async function createIssue(formData: FormData) {
     status: (formData.get("status") as IssueStatus) || IssueStatus.DRAFT,
     coverImage: formData.get("coverImage") as string | null,
     number: formData.get("number") ? parseInt(formData.get("number") as string) : undefined,
+    slug: formData.get("slug") as string | undefined,
   }
 
   const parsed = CreateIssueSchema.safeParse(data)
@@ -88,6 +114,9 @@ export async function createIssue(formData: FormData) {
     issueNumber = (latestIssue?.number || 0) + 1
   }
 
+  // Auto-generate slug if not provided
+  const issueSlug = parsed.data.slug || `${generateSlug(parsed.data.title)}-${issueNumber}`
+
   const issue = await prisma.digestIssue.create({
     data: {
       title: parsed.data.title,
@@ -95,6 +124,7 @@ export async function createIssue(formData: FormData) {
       status: parsed.data.status,
       coverImage: parsed.data.coverImage || null,
       number: issueNumber,
+      slug: issueSlug,
       authorId: session.user.id,
     },
   })
@@ -115,6 +145,7 @@ export async function updateIssue(id: string, formData: FormData) {
     description: formData.get("description") as string | null,
     status: formData.get("status") as IssueStatus,
     coverImage: formData.get("coverImage") as string | null,
+    slug: formData.get("slug") as string | undefined,
   }
 
   const parsed = UpdateIssueSchema.safeParse(data)
@@ -122,17 +153,12 @@ export async function updateIssue(id: string, formData: FormData) {
     throw new Error(parsed.error.message)
   }
 
-  const updateData: {
-    title: string
-    description: string | null
-    status: IssueStatus
-    coverImage: string | null
-    publishedAt?: Date
-  } = {
+  const updateData: any = {
     title: parsed.data.title!,
     description: parsed.data.description || null,
     status: parsed.data.status!,
     coverImage: parsed.data.coverImage || null,
+    slug: parsed.data.slug,
   }
 
   // Set publishedAt when publishing
@@ -151,6 +177,7 @@ export async function updateIssue(id: string, formData: FormData) {
   revalidatePath("/admin/issues")
   revalidatePath(`/admin/issues/${id}`)
   revalidatePath(`/issues/${issue.number}`)
+  revalidatePath(`/issues/${issue.slug}`)
   revalidatePath("/")
   return issue
 }
@@ -224,12 +251,13 @@ export async function updateSection(id: string, formData: FormData) {
 
   const issue = await prisma.digestIssue.findUnique({
     where: { id: section.issueId },
-    select: { number: true },
+    select: { number: true, slug: true },
   })
 
   revalidatePath(`/admin/issues/${section.issueId}`)
   if (issue) {
     revalidatePath(`/issues/${issue.number}`)
+    revalidatePath(`/issues/${issue.slug}`)
   }
   return section
 }
@@ -242,7 +270,7 @@ export async function deleteSection(id: string) {
 
   const section = await prisma.digestSection.findUnique({
     where: { id },
-    include: { issue: { select: { id: true, number: true } } },
+    include: { issue: { select: { id: true, number: true, slug: true } } },
   })
 
   if (!section) throw new Error("Section not found")
@@ -251,6 +279,7 @@ export async function deleteSection(id: string) {
 
   revalidatePath(`/admin/issues/${section.issueId}`)
   revalidatePath(`/issues/${section.issue.number}`)
+  revalidatePath(`/issues/${section.issue.slug}`)
 }
 
 export async function reorderSections(issueId: string, sectionIds: string[]) {
@@ -270,12 +299,13 @@ export async function reorderSections(issueId: string, sectionIds: string[]) {
 
   const issue = await prisma.digestIssue.findUnique({
     where: { id: issueId },
-    select: { number: true },
+    select: { number: true, slug: true },
   })
 
   revalidatePath(`/admin/issues/${issueId}`)
   if (issue) {
     revalidatePath(`/issues/${issue.number}`)
+    revalidatePath(`/issues/${issue.slug}`)
   }
 }
 
@@ -315,13 +345,16 @@ export async function createBlock(sectionId: string, data: { type: BlockType; co
 
   const section = await prisma.digestSection.findUnique({
     where: { id: sectionId },
-    include: { issue: { select: { number: true } } },
+    include: { issue: { select: { number: true, slug: true, id: true } } },
   })
 
   if (section) {
     revalidatePath(`/admin/issues/${section.issueId}`)
     if (section.issue.number) {
       revalidatePath(`/issues/${section.issue.number}`)
+    }
+    if (section.issue.slug) {
+      revalidatePath(`/issues/${section.issue.slug}`)
     }
   }
 
@@ -356,13 +389,16 @@ export async function updateBlock(id: string, data: { type: BlockType; content: 
 
   const section = await prisma.digestSection.findUnique({
     where: { id: block.sectionId },
-    include: { issue: { select: { number: true } } },
+    include: { issue: { select: { number: true, slug: true, id: true } } },
   })
 
   if (section) {
     revalidatePath(`/admin/issues/${section.issueId}`)
     if (section.issue.number) {
       revalidatePath(`/issues/${section.issue.number}`)
+    }
+    if (section.issue.slug) {
+      revalidatePath(`/issues/${section.issue.slug}`)
     }
   }
 
@@ -377,7 +413,7 @@ export async function deleteBlock(id: string) {
 
   const block = await prisma.contentBlock.findUnique({
     where: { id },
-    include: { section: { include: { issue: { select: { number: true } } } } },
+    include: { section: { include: { issue: { select: { number: true, slug: true, id: true } } } } },
   })
 
   if (!block) throw new Error("Block not found")
@@ -387,6 +423,9 @@ export async function deleteBlock(id: string) {
   revalidatePath(`/admin/issues/${block.section.issueId}`)
   if (block.section.issue.number) {
     revalidatePath(`/issues/${block.section.issue.number}`)
+  }
+  if (block.section.issue.slug) {
+    revalidatePath(`/issues/${block.section.issue.slug}`)
   }
 }
 
@@ -407,13 +446,16 @@ export async function reorderBlocks(sectionId: string, blockIds: string[]) {
 
   const section = await prisma.digestSection.findUnique({
     where: { id: sectionId },
-    include: { issue: { select: { number: true } } },
+    include: { issue: { select: { number: true, slug: true, id: true } } },
   })
 
   if (section) {
     revalidatePath(`/admin/issues/${section.issueId}`)
     if (section.issue.number) {
       revalidatePath(`/issues/${section.issue.number}`)
+    }
+    if (section.issue.slug) {
+      revalidatePath(`/issues/${section.issue.slug}`)
     }
   }
 }

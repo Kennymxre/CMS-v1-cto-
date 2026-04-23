@@ -62,7 +62,7 @@ export default async function HomePage() {
             {issues.map((issue) => (
               <Link
                 key={issue.id}
-                href={`/issues/${issue.number}`}
+                href={`/issues/${issue.slug}`}
                 className="group"
               >
                 <Card className="h-full overflow-hidden transition-colors group-hover:border-primary">

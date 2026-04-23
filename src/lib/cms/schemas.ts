@@ -36,6 +36,45 @@ export const DividerBlockContentSchema = z.object({
   style: z.enum(["simple", "dots", "stars", "dash"]).default("simple"),
 })
 
+export const KPIBlockContentSchema = z.object({
+  label: z.string(),
+  value: z.string(),
+  trend: z.string().optional(),
+  trendDirection: z.enum(["up", "down", "neutral"]).default("neutral"),
+})
+
+export const ChartBlockContentSchema = z.object({
+  title: z.string(),
+  chartType: z.enum(["area", "bar", "line"]).default("area"),
+  data: z.array(z.record(z.any())),
+})
+
+export const NewsCardBlockContentSchema = z.object({
+  title: z.string(),
+  description: z.string().optional(),
+  image: z.string().url(),
+  category: z.string().optional(),
+  url: z.string().url().optional(),
+})
+
+export const MarketNewsBlockContentSchema = z.object({
+  items: z.array(z.object({
+    label: z.string(),
+    value: z.string(),
+    change: z.string(),
+    trend: z.enum(["up", "down", "neutral"]).optional(),
+  })),
+})
+
+export const ExpertGridBlockContentSchema = z.object({
+  experts: z.array(z.object({
+    name: z.string(),
+    role: z.string(),
+    avatar: z.string().url().optional(),
+    insight: z.string(),
+  })),
+})
+
 // Union schema for all block content types
 export const BlockContentSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal(BlockType.TEXT), ...TextBlockContentSchema.shape }),
@@ -44,6 +83,11 @@ export const BlockContentSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal(BlockType.QUOTE), ...QuoteBlockContentSchema.shape }),
   z.object({ type: z.literal(BlockType.CODE), ...CodeBlockContentSchema.shape }),
   z.object({ type: z.literal(BlockType.DIVIDER), ...DividerBlockContentSchema.shape }),
+  z.object({ type: z.literal(BlockType.KPI), ...KPIBlockContentSchema.shape }),
+  z.object({ type: z.literal(BlockType.CHART), ...ChartBlockContentSchema.shape }),
+  z.object({ type: z.literal(BlockType.NEWS_CARD), ...NewsCardBlockContentSchema.shape }),
+  z.object({ type: z.literal(BlockType.MARKET_NEWS), ...MarketNewsBlockContentSchema.shape }),
+  z.object({ type: z.literal(BlockType.EXPERT_GRID), ...ExpertGridBlockContentSchema.shape }),
 ])
 
 // Type exports
@@ -53,6 +97,11 @@ export type LinkBlockContent = z.infer<typeof LinkBlockContentSchema>
 export type QuoteBlockContent = z.infer<typeof QuoteBlockContentSchema>
 export type CodeBlockContent = z.infer<typeof CodeBlockContentSchema>
 export type DividerBlockContent = z.infer<typeof DividerBlockContentSchema>
+export type KPIBlockContent = z.infer<typeof KPIBlockContentSchema>
+export type ChartBlockContent = z.infer<typeof ChartBlockContentSchema>
+export type NewsCardBlockContent = z.infer<typeof NewsCardBlockContentSchema>
+export type MarketNewsBlockContent = z.infer<typeof MarketNewsBlockContentSchema>
+export type ExpertGridBlockContent = z.infer<typeof ExpertGridBlockContentSchema>
 
 export type BlockContent = z.infer<typeof BlockContentSchema>
 
@@ -63,6 +112,7 @@ export const DigestIssueFormSchema = z.object({
   status: z.nativeEnum(IssueStatus),
   coverImage: z.string().url().optional().or(z.literal("")),
   number: z.number().int().positive().optional(),
+  slug: z.string().min(1, "Slug is required").optional(),
 })
 
 export const DigestSectionFormSchema = z.object({
