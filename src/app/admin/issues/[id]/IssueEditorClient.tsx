@@ -12,25 +12,45 @@ import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Plus, MoreHorizontal, Pencil, Trash2, GripVertical, FileText, Image, Link2, Quote, Code, Minus } from "lucide-react"
+import { Plus, Pencil, Trash2, GripVertical, FileText, Image, Link2, Quote, Code, Minus } from "lucide-react"
 import { BlockRenderer } from "@/components/cms/BlockRenderer"
 import { BlockEditor } from "@/components/cms/BlockEditor"
-import { updateIssue, createSection, updateSection, deleteSection, createBlock, updateBlock, deleteBlock } from "@/lib/actions/cms"
+import { SortableItem } from "@/components/cms/SortableItem"
+import {
+  updateIssue,
+  createSection,
+  updateSection,
+  deleteSection,
+  createBlock,
+  updateBlock,
+  deleteBlock,
+  reorderSections,
+  reorderBlocks,
+} from "@/lib/actions/cms"
 import type { DigestIssue, DigestSection, ContentBlock } from "@prisma/client"
 import type { BlockContent } from "@/lib/cms/schemas"
 import { IssueStatus, BlockType } from "@prisma/client"
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core"
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable"
 
 interface IssueEditorClientProps {
   issue: DigestIssue & {
@@ -64,6 +84,56 @@ export function IssueEditorClient({ issue }: IssueEditorClientProps) {
   const [editingSection, setEditingSection] = useState<string | null>(null)
   const [editingBlock, setEditingBlock] = useState<ContentBlock | null>(null)
   const [addingBlockToSection, setAddingBlockToSection] = useState<string | null>(null)
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  )
+
+  async function handleDragEndSections(event: DragEndEvent) {
+    const { active, over } = event
+
+    if (over && active.id !== over.id) {
+      const oldIndex = issue.sections.findIndex((s) => s.id === active.id)
+      const newIndex = issue.sections.findIndex((s) => s.id === over.id)
+
+      const newSections = arrayMove(issue.sections, oldIndex, newIndex)
+      const sectionIds = newSections.map((s) => s.id)
+
+      try {
+        await reorderSections(issue.id, sectionIds)
+        toast.success("Sections reordered")
+        router.refresh()
+      } catch (error) {
+        toast.error("Failed to reorder sections")
+      }
+    }
+  }
+
+  async function handleDragEndBlocks(sectionId: string, event: DragEndEvent) {
+    const { active, over } = event
+
+    if (over && active.id !== over.id) {
+      const section = issue.sections.find((s) => s.id === sectionId)
+      if (!section) return
+
+      const oldIndex = section.blocks.findIndex((b) => b.id === active.id)
+      const newIndex = section.blocks.findIndex((b) => b.id === over.id)
+
+      const newBlocks = arrayMove(section.blocks, oldIndex, newIndex)
+      const blockIds = newBlocks.map((b) => b.id)
+
+      try {
+        await reorderBlocks(sectionId, blockIds)
+        toast.success("Blocks reordered")
+        router.refresh()
+      } catch (error) {
+        toast.error("Failed to reorder blocks")
+      }
+    }
+  }
 
   async function handleUpdateIssue(formData: FormData) {
     setIsSubmitting(true)
@@ -236,11 +306,9 @@ export function IssueEditorClient({ issue }: IssueEditorClientProps) {
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold">Sections</h2>
           <Dialog>
-            <DialogTrigger>
-              <Button size="sm">
+            <DialogTrigger render={<Button size="sm" />}>
                 <Plus className="h-4 w-4 mr-2" />
                 Add Section
-              </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
@@ -274,126 +342,180 @@ export function IssueEditorClient({ issue }: IssueEditorClientProps) {
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-4">
-            {issue.sections.map((section) => (
-              <Card key={section.id}>
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    {editingSection === section.id ? (
-                      <form
-                        action={(formData) => handleUpdateSection(section.id, formData)}
-                        className="flex gap-2 flex-1"
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEndSections}
+          >
+            <SortableContext
+              items={issue.sections.map((s) => s.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="space-y-4">
+                {issue.sections.map((section) => (
+                  <SortableItem key={section.id} id={section.id}>
+                    {({ attributes, listeners, setNodeRef, style, isDragging }) => (
+                      <Card
+                        ref={setNodeRef}
+                        style={style}
+                        className={isDragging ? "z-50 ring-2 ring-primary" : ""}
                       >
-                        <Input
-                          name="title"
-                          defaultValue={section.title}
-                          className="flex-1"
-                        />
-                        <Button type="submit" size="sm">Save</Button>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setEditingSection(null)}
-                        >
-                          Cancel
-                        </Button>
-                      </form>
-                    ) : (
-                      <>
-                        <CardTitle className="text-lg">{section.title}</CardTitle>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setEditingSection(section.id)}
+                        <CardHeader className="pb-3">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 flex-1">
+                              <div
+                                {...attributes}
+                                {...listeners}
+                                className="cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded"
+                              >
+                                <GripVertical className="h-5 w-5 text-muted-foreground" />
+                              </div>
+                              {editingSection === section.id ? (
+                                <form
+                                  action={(formData) => handleUpdateSection(section.id, formData)}
+                                  className="flex gap-2 flex-1"
+                                >
+                                  <Input
+                                    name="title"
+                                    defaultValue={section.title}
+                                    className="flex-1"
+                                  />
+                                  <Button type="submit" size="sm">Save</Button>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setEditingSection(null)}
+                                  >
+                                    Cancel
+                                  </Button>
+                                </form>
+                              ) : (
+                                <>
+                                  <CardTitle className="text-lg">{section.title}</CardTitle>
+                                  <div className="flex items-center gap-2">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => setEditingSection(section.id)}
+                                    >
+                                      <Pencil className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => handleDeleteSection(section.id)}
+                                    >
+                                      <Trash2 className="h-4 w-4 text-destructive" />
+                                    </Button>
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          {/* Blocks */}
+                          <DndContext
+                            sensors={sensors}
+                            collisionDetection={closestCenter}
+                            onDragEnd={(event) => handleDragEndBlocks(section.id, event)}
                           >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDeleteSection(section.id)}
-                          >
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {/* Blocks */}
-                  {section.blocks.length > 0 && (
-                    <div className="space-y-3 pl-4 border-l-2 border-muted">
-                      {section.blocks.map((block) => (
-                        <div key={block.id} className="relative group">
-                          {editingBlock?.id === block.id ? (
+                            <SortableContext
+                              items={section.blocks.map((b) => b.id)}
+                              strategy={verticalListSortingStrategy}
+                            >
+                              {section.blocks.length > 0 && (
+                                <div className="space-y-3 pl-4 border-l-2 border-muted">
+                                  {section.blocks.map((block) => (
+                                    <SortableItem key={block.id} id={block.id}>
+                                      {({ attributes, listeners, setNodeRef, style, isDragging }) => (
+                                        <div
+                                          ref={setNodeRef}
+                                          style={style}
+                                          className={`relative group ${isDragging ? "z-50 ring-2 ring-primary rounded-lg" : ""}`}
+                                        >
+                                          {editingBlock?.id === block.id ? (
+                                            <BlockEditor
+                                              initialData={{
+                                                id: block.id,
+                                                type: block.type,
+                                                content: block.content as BlockContent,
+                                              }}
+                                              sectionId={section.id}
+                                              onSave={(data) => handleUpdateBlock(block.id, data)}
+                                              onCancel={() => setEditingBlock(null)}
+                                            />
+                                          ) : (
+                                            <div className="relative p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
+                                              <div className="flex items-center gap-2 mb-2">
+                                                <div
+                                                  {...attributes}
+                                                  {...listeners}
+                                                  className="cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded"
+                                                >
+                                                  <GripVertical className="h-4 w-4 text-muted-foreground" />
+                                                </div>
+                                                <Badge variant="outline" className="text-xs">
+                                                  {blockTypeIcons[block.type]}
+                                                  <span className="ml-1">{blockTypeLabels[block.type]}</span>
+                                                </Badge>
+                                                <div className="flex-1" />
+                                                <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                                                  <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => setEditingBlock(block)}
+                                                  >
+                                                    <Pencil className="h-3 w-3" />
+                                                  </Button>
+                                                  <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => handleDeleteBlock(block.id)}
+                                                  >
+                                                    <Trash2 className="h-3 w-3 text-destructive" />
+                                                  </Button>
+                                                </div>
+                                              </div>
+                                              <BlockRenderer content={block.content as BlockContent} isPreview />
+                                            </div>
+                                          )}
+                                        </div>
+                                      )}
+                                    </SortableItem>
+                                  ))}
+                                </div>
+                              )}
+                            </SortableContext>
+                          </DndContext>
+
+                          {/* Add Block */}
+                          {addingBlockToSection === section.id ? (
                             <BlockEditor
-                              initialData={{
-                                id: block.id,
-                                type: block.type,
-                                content: block.content as BlockContent,
-                              }}
                               sectionId={section.id}
-                              onSave={(data) => handleUpdateBlock(block.id, data)}
-                              onCancel={() => setEditingBlock(null)}
+                              onSave={(data) => handleAddBlock(section.id, data)}
+                              onCancel={() => setAddingBlockToSection(null)}
                             />
                           ) : (
-                            <div className="relative p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
-                              <div className="flex items-center gap-2 mb-2">
-                                <Badge variant="outline" className="text-xs">
-                                  {blockTypeIcons[block.type]}
-                                  <span className="ml-1">{blockTypeLabels[block.type]}</span>
-                                </Badge>
-                                <div className="flex-1" />
-                                <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => setEditingBlock(block)}
-                                  >
-                                    <Pencil className="h-3 w-3" />
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => handleDeleteBlock(block.id)}
-                                  >
-                                    <Trash2 className="h-3 w-3 text-destructive" />
-                                  </Button>
-                                </div>
-                              </div>
-                              <BlockRenderer content={block.content as BlockContent} isPreview />
-                            </div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="w-full"
+                              onClick={() => setAddingBlockToSection(section.id)}
+                            >
+                              <Plus className="h-4 w-4 mr-2" />
+                              Add Block
+                            </Button>
                           )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Add Block */}
-                  {addingBlockToSection === section.id ? (
-                    <BlockEditor
-                      sectionId={section.id}
-                      onSave={(data) => handleAddBlock(section.id, data)}
-                      onCancel={() => setAddingBlockToSection(null)}
-                    />
-                  ) : (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full"
-                      onClick={() => setAddingBlockToSection(section.id)}
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Block
-                    </Button>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+                  </SortableItem>
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
         )}
       </div>
     </div>
