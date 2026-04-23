@@ -51,7 +51,7 @@ export default async function IssuePage({ params }: IssuePageProps) {
       </nav>
 
       {/* Hero Section */}
-      <section id="hero" className="relative pt-20 pb-32 overflow-hidden">
+      <section id="hero" className="relative pt-20 pb-32 overflow-hidden scroll-mt-24">
         <div className="container relative z-10">
           <div className="flex flex-col items-center text-center gap-8">
             <div className="space-y-4 max-w-4xl">
@@ -103,7 +103,7 @@ export default async function IssuePage({ params }: IssuePageProps) {
           <section
             key={section.id}
             id={`section-${section.id}`}
-            className="py-24 md:py-32 border-t border-slate-200/60 first:border-t-0"
+            className="py-24 md:py-32 border-t border-slate-200/60 first:border-t-0 scroll-mt-24"
           >
             <div className="container">
               <div className="flex flex-col gap-16">

@@ -75,6 +75,26 @@ export const ExpertGridBlockContentSchema = z.object({
   })),
 })
 
+export const TimelineBlockContentSchema = z.object({
+  items: z.array(z.object({
+    date: z.string(),
+    title: z.string(),
+    description: z.string(),
+  })),
+})
+
+export const NotesBlockContentSchema = z.object({
+  title: z.string().optional(),
+  items: z.array(z.string()),
+})
+
+export const RegulationBlockContentSchema = z.object({
+  title: z.string(),
+  status: z.string(),
+  impact: z.enum(["low", "medium", "high", "critical"]).default("low"),
+  summary: z.string(),
+})
+
 // Union schema for all block content types
 export const BlockContentSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal(BlockType.TEXT), ...TextBlockContentSchema.shape }),
@@ -88,6 +108,9 @@ export const BlockContentSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal(BlockType.NEWS_CARD), ...NewsCardBlockContentSchema.shape }),
   z.object({ type: z.literal(BlockType.MARKET_NEWS), ...MarketNewsBlockContentSchema.shape }),
   z.object({ type: z.literal(BlockType.EXPERT_GRID), ...ExpertGridBlockContentSchema.shape }),
+  z.object({ type: z.literal(BlockType.TIMELINE), ...TimelineBlockContentSchema.shape }),
+  z.object({ type: z.literal(BlockType.NOTES), ...NotesBlockContentSchema.shape }),
+  z.object({ type: z.literal(BlockType.REGULATION), ...RegulationBlockContentSchema.shape }),
 ])
 
 // Type exports
@@ -102,6 +125,9 @@ export type ChartBlockContent = z.infer<typeof ChartBlockContentSchema>
 export type NewsCardBlockContent = z.infer<typeof NewsCardBlockContentSchema>
 export type MarketNewsBlockContent = z.infer<typeof MarketNewsBlockContentSchema>
 export type ExpertGridBlockContent = z.infer<typeof ExpertGridBlockContentSchema>
+export type TimelineBlockContent = z.infer<typeof TimelineBlockContentSchema>
+export type NotesBlockContent = z.infer<typeof NotesBlockContentSchema>
+export type RegulationBlockContent = z.infer<typeof RegulationBlockContentSchema>
 
 export type BlockContent = z.infer<typeof BlockContentSchema>
 

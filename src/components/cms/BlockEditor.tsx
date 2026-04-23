@@ -33,6 +33,9 @@ const blockTypeOptions = [
   { value: BlockType.NEWS_CARD, label: "News Card" },
   { value: BlockType.MARKET_NEWS, label: "Market News" },
   { value: BlockType.EXPERT_GRID, label: "Expert Grid" },
+  { value: BlockType.TIMELINE, label: "Timeline" },
+  { value: BlockType.NOTES, label: "Notes" },
+  { value: BlockType.REGULATION, label: "Regulation" },
 ]
 
 interface ContentState {
@@ -67,7 +70,7 @@ export function BlockEditor({ initialData, sectionId, onSave, onCancel }: BlockE
   const [content, setContent] = useState<ContentState>(() => {
     if (initialData?.content) {
       const data = { ...initialData.content } as any
-      if ([BlockType.CHART, BlockType.MARKET_NEWS, BlockType.EXPERT_GRID].includes(blockType)) {
+      if ([BlockType.CHART, BlockType.MARKET_NEWS, BlockType.EXPERT_GRID, BlockType.TIMELINE, BlockType.NOTES, BlockType.REGULATION].includes(blockType)) {
           return { ...data, jsonContent: JSON.stringify(data, null, 2) }
       }
       return data as ContentState
@@ -86,7 +89,7 @@ export function BlockEditor({ initialData, sectionId, onSave, onCancel }: BlockE
       let finalContent: any = { type: blockType, ...content }
       delete finalContent.jsonContent
 
-      if ([BlockType.CHART, BlockType.MARKET_NEWS, BlockType.EXPERT_GRID].includes(blockType) && content.jsonContent) {
+      if ([BlockType.CHART, BlockType.MARKET_NEWS, BlockType.EXPERT_GRID, BlockType.TIMELINE, BlockType.NOTES, BlockType.REGULATION].includes(blockType) && content.jsonContent) {
           try {
               const parsed = JSON.parse(content.jsonContent)
               finalContent = { ...parsed, type: blockType }
@@ -270,6 +273,9 @@ export function BlockEditor({ initialData, sectionId, onSave, onCancel }: BlockE
       case BlockType.CHART:
       case BlockType.MARKET_NEWS:
       case BlockType.EXPERT_GRID:
+      case BlockType.TIMELINE:
+      case BlockType.NOTES:
+      case BlockType.REGULATION:
         return (
           <div className="space-y-2">
             <Label htmlFor="jsonContent">JSON Content</Label>
