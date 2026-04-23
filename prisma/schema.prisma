@@ -3,7 +3,6 @@
 
 generator client {
   provider   = "prisma-client-js"
-  engineType = "binary"
 }
 
 datasource db {
@@ -85,6 +84,9 @@ enum BlockType {
   NEWS_CARD
   MARKET_NEWS
   EXPERT_GRID
+  TIMELINE
+  NOTES
+  REGULATION
 }
 
 model DigestIssue {

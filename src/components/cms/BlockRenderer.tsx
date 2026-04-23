@@ -8,7 +8,10 @@ import type {
   ChartBlockContent,
   NewsCardBlockContent,
   MarketNewsBlockContent,
-  ExpertGridBlockContent
+  ExpertGridBlockContent,
+  TimelineBlockContent,
+  NotesBlockContent,
+  RegulationBlockContent,
 } from "@/lib/cms/schemas"
 
 import KPIBlock from "./blocks/KPIBlock"
@@ -16,6 +19,9 @@ import ChartBlock from "./blocks/ChartBlock"
 import NewsCardBlock from "./blocks/NewsCardBlock"
 import MarketNewsBlock from "./blocks/MarketNewsBlock"
 import ExpertGridBlock from "./blocks/ExpertGrid"
+import TimelineBlock from "./blocks/TimelineBlock"
+import NotesBlock from "./blocks/NotesBlock"
+import RegulationBlock from "./blocks/RegulationBlock"
 
 interface BlockRendererProps {
   content: BlockContent
@@ -184,6 +190,12 @@ export function BlockRenderer({ content, isPreview = false }: BlockRendererProps
       return <MarketNewsBlock content={content as MarketNewsBlockContent} />
     case BlockType.EXPERT_GRID:
       return <ExpertGridBlock content={content as ExpertGridBlockContent} />
+    case BlockType.TIMELINE:
+      return <TimelineBlock content={content as TimelineBlockContent} />
+    case BlockType.NOTES:
+      return <NotesBlock content={content as NotesBlockContent} />
+    case BlockType.REGULATION:
+      return <RegulationBlock content={content as RegulationBlockContent} />
     default:
       return (
         <div className="p-8 bg-destructive/5 text-destructive rounded-[20px] border border-destructive/20 font-medium">

@@ -18,7 +18,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Plus, Pencil, Trash2, GripVertical, FileText, Image, Link2, Quote, Code, Minus, BarChart3, TrendingUp, Newspaper, LineChart, Users } from "lucide-react"
+import { Plus, Pencil, Trash2, GripVertical, FileText, Image, Link2, Quote, Code, Minus, BarChart3, TrendingUp, Newspaper, LineChart, Users, Calendar, ListTodo, Gavel } from "lucide-react"
 import { BlockRenderer } from "@/components/cms/BlockRenderer"
 import { BlockEditor } from "@/components/cms/BlockEditor"
 import { SortableItem } from "@/components/cms/SortableItem"
@@ -72,6 +72,9 @@ const blockTypeIcons: Record<BlockType, React.ReactNode> = {
   [BlockType.NEWS_CARD]: <Newspaper className="h-4 w-4" />,
   [BlockType.MARKET_NEWS]: <LineChart className="h-4 w-4" />,
   [BlockType.EXPERT_GRID]: <Users className="h-4 w-4" />,
+  [BlockType.TIMELINE]: <Calendar className="h-4 w-4" />,
+  [BlockType.NOTES]: <ListTodo className="h-4 w-4" />,
+  [BlockType.REGULATION]: <Gavel className="h-4 w-4" />,
 }
 
 const blockTypeLabels: Record<BlockType, string> = {
@@ -86,6 +89,9 @@ const blockTypeLabels: Record<BlockType, string> = {
   [BlockType.NEWS_CARD]: "News Card",
   [BlockType.MARKET_NEWS]: "Market News",
   [BlockType.EXPERT_GRID]: "Expert Grid",
+  [BlockType.TIMELINE]: "Timeline",
+  [BlockType.NOTES]: "Notes",
+  [BlockType.REGULATION]: "Regulation",
 }
 
 export function IssueEditorClient({ issue }: IssueEditorClientProps) {
