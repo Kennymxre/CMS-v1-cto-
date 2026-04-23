@@ -28,6 +28,11 @@ const blockTypeOptions = [
   { value: BlockType.QUOTE, label: "Quote" },
   { value: BlockType.CODE, label: "Code" },
   { value: BlockType.DIVIDER, label: "Divider" },
+  { value: BlockType.KPI, label: "KPI" },
+  { value: BlockType.CHART, label: "Chart" },
+  { value: BlockType.NEWS_CARD, label: "News Card" },
+  { value: BlockType.MARKET_NEWS, label: "Market News" },
+  { value: BlockType.EXPERT_GRID, label: "Expert Grid" },
 ]
 
 interface ContentState {
@@ -46,6 +51,14 @@ interface ContentState {
   language?: string
   code?: string
   style?: string
+  // New fields
+  label?: string
+  value?: string
+  trend?: string
+  trendDirection?: string
+  chartType?: string
+  category?: string
+  jsonContent?: string // For complex types
 }
 
 export function BlockEditor({ initialData, sectionId, onSave, onCancel }: BlockEditorProps) {
@@ -53,7 +66,11 @@ export function BlockEditor({ initialData, sectionId, onSave, onCancel }: BlockE
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [content, setContent] = useState<ContentState>(() => {
     if (initialData?.content) {
-      return initialData.content as ContentState
+      const data = { ...initialData.content } as any
+      if ([BlockType.CHART, BlockType.MARKET_NEWS, BlockType.EXPERT_GRID].includes(blockType)) {
+          return { ...data, jsonContent: JSON.stringify(data, null, 2) }
+      }
+      return data as ContentState
     }
     return {}
   })
@@ -66,8 +83,20 @@ export function BlockEditor({ initialData, sectionId, onSave, onCancel }: BlockE
     e.preventDefault()
     setIsSubmitting(true)
     try {
-      const finalContent = { type: blockType, ...content } as BlockContent
-      await onSave({ type: blockType, content: finalContent })
+      let finalContent: any = { type: blockType, ...content }
+      delete finalContent.jsonContent
+
+      if ([BlockType.CHART, BlockType.MARKET_NEWS, BlockType.EXPERT_GRID].includes(blockType) && content.jsonContent) {
+          try {
+              const parsed = JSON.parse(content.jsonContent)
+              finalContent = { ...parsed, type: blockType }
+          } catch (e) {
+              alert("Invalid JSON content")
+              return
+          }
+      }
+
+      await onSave({ type: blockType, content: finalContent as BlockContent })
     } finally {
       setIsSubmitting(false)
     }
@@ -120,26 +149,6 @@ export function BlockEditor({ initialData, sectionId, onSave, onCancel }: BlockE
                 placeholder="Image caption"
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="width">Width</Label>
-                <Input
-                  id="width"
-                  type="number"
-                  value={content.width || 800}
-                  onChange={(e) => updateContent("width", parseInt(e.target.value) || 800)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="height">Height</Label>
-                <Input
-                  id="height"
-                  type="number"
-                  value={content.height || 450}
-                  onChange={(e) => updateContent("height", parseInt(e.target.value) || 450)}
-                />
-              </div>
-            </div>
           </div>
         )
 
@@ -164,85 +173,117 @@ export function BlockEditor({ initialData, sectionId, onSave, onCancel }: BlockE
                 placeholder="Link title"
               />
             </div>
+          </div>
+        )
+
+      case BlockType.KPI:
+        return (
+          <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="description">Description (optional)</Label>
+              <Label htmlFor="label">Label</Label>
+              <Input
+                id="label"
+                value={content.label || ""}
+                onChange={(e) => updateContent("label", e.target.value)}
+                placeholder="e.g. Total Revenue"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="value">Value</Label>
+              <Input
+                id="value"
+                value={content.value || ""}
+                onChange={(e) => updateContent("value", e.target.value)}
+                placeholder="e.g. $4.2M"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+               <div className="space-y-2">
+                <Label htmlFor="trend">Trend (optional)</Label>
+                <Input
+                  id="trend"
+                  value={content.trend || ""}
+                  onChange={(e) => updateContent("trend", e.target.value)}
+                  placeholder="e.g. +12%"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="trendDirection">Trend Direction</Label>
+                <select
+                  id="trendDirection"
+                  value={content.trendDirection || "neutral"}
+                  onChange={(e) => updateContent("trendDirection", e.target.value)}
+                  className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                >
+                  <option value="up">Up</option>
+                  <option value="down">Down</option>
+                  <option value="neutral">Neutral</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        )
+
+      case BlockType.NEWS_CARD:
+        return (
+          <div className="space-y-4">
+             <div className="space-y-2">
+              <Label htmlFor="title">Title</Label>
+              <Input
+                id="title"
+                value={content.title || ""}
+                onChange={(e) => updateContent("title", e.target.value)}
+                placeholder="News title"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="description">Description</Label>
               <Textarea
                 id="description"
                 value={content.description || ""}
                 onChange={(e) => updateContent("description", e.target.value)}
-                placeholder="Brief description"
-                rows={2}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="image">Thumbnail URL (optional)</Label>
-              <Input
-                id="image"
-                value={content.image || ""}
-                onChange={(e) => updateContent("image", e.target.value)}
-                placeholder="https://example.com/thumbnail.jpg"
-              />
-            </div>
-          </div>
-        )
-
-      case BlockType.QUOTE:
-        return (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="text">Quote Text</Label>
-              <Textarea
-                id="text"
-                value={content.text || ""}
-                onChange={(e) => updateContent("text", e.target.value)}
-                placeholder="Enter the quote..."
+                placeholder="News description"
                 rows={3}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="author">Author (optional)</Label>
+              <Label htmlFor="image">Image URL</Label>
               <Input
-                id="author"
-                value={content.author || ""}
-                onChange={(e) => updateContent("author", e.target.value)}
-                placeholder="Quote author"
+                id="image"
+                value={content.image || ""}
+                onChange={(e) => updateContent("image", e.target.value)}
+                placeholder="https://example.com/news.jpg"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="source">Source (optional)</Label>
+             <div className="space-y-2">
+              <Label htmlFor="category">Category</Label>
               <Input
-                id="source"
-                value={content.source || ""}
-                onChange={(e) => updateContent("source", e.target.value)}
-                placeholder="Book, article, etc."
+                id="category"
+                value={content.category || ""}
+                onChange={(e) => updateContent("category", e.target.value)}
+                placeholder="e.g. Business"
               />
             </div>
           </div>
         )
 
-      case BlockType.CODE:
+      case BlockType.CHART:
+      case BlockType.MARKET_NEWS:
+      case BlockType.EXPERT_GRID:
         return (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="language">Language</Label>
-              <Input
-                id="language"
-                value={content.language || "plaintext"}
-                onChange={(e) => updateContent("language", e.target.value)}
-                placeholder="javascript, python, etc."
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="code">Code</Label>
-              <Textarea
-                id="code"
-                value={content.code || ""}
-                onChange={(e) => updateContent("code", e.target.value)}
-                placeholder="// Your code here..."
-                rows={10}
-                className="font-mono"
-              />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="jsonContent">JSON Content</Label>
+            <Textarea
+              id="jsonContent"
+              value={content.jsonContent || ""}
+              onChange={(e) => updateContent("jsonContent", e.target.value)}
+              placeholder='{ "items": [...] }'
+              rows={12}
+              className="font-mono text-xs"
+            />
+            <p className="text-[10px] text-muted-foreground italic">
+              Note: Complex blocks are currently edited via JSON for precision.
+            </p>
           </div>
         )
 
@@ -270,19 +311,19 @@ export function BlockEditor({ initialData, sectionId, onSave, onCancel }: BlockE
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{initialData?.id ? "Edit Block" : "Add Block"}</CardTitle>
+    <Card className="border-2 border-slate-200 rounded-[20px] shadow-lg overflow-hidden">
+      <CardHeader className="bg-slate-50 border-b">
+        <CardTitle className="text-lg font-black uppercase tracking-widest">{initialData?.id ? "Update Component" : "Add Component"}</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="type">Block Type</Label>
+            <Label htmlFor="type" className="font-bold">Component Type</Label>
             <select
               id="type"
               value={blockType}
               onChange={(e) => setBlockType(e.target.value as BlockType)}
-              className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+              className="flex h-12 w-full items-center justify-between rounded-full border-2 border-slate-200 bg-white px-6 py-2 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-yellow-400"
             >
               {blockTypeOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -292,16 +333,16 @@ export function BlockEditor({ initialData, sectionId, onSave, onCancel }: BlockE
             </select>
           </div>
 
-          <Separator />
+          <Separator className="h-0.5 bg-slate-100" />
 
           {renderContentEditor()}
 
-          <div className="flex justify-end gap-3">
-            <Button type="button" variant="outline" onClick={onCancel}>
+          <div className="flex justify-end gap-3 pt-4">
+            <Button type="button" variant="ghost" onClick={onCancel} className="rounded-full font-bold">
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : initialData?.id ? "Update Block" : "Add Block"}
+            <Button type="submit" disabled={isSubmitting} className="bg-slate-900 hover:bg-slate-800 text-white rounded-full px-8 font-bold">
+              {isSubmitting ? "Processing..." : initialData?.id ? "Apply Changes" : "Create Component"}
             </Button>
           </div>
         </form>

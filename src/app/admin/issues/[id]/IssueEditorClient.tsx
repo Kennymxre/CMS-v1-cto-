@@ -18,7 +18,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Plus, Pencil, Trash2, GripVertical, FileText, Image, Link2, Quote, Code, Minus } from "lucide-react"
+import { Plus, Pencil, Trash2, GripVertical, FileText, Image, Link2, Quote, Code, Minus, BarChart3, TrendingUp, Newspaper, LineChart, Users } from "lucide-react"
 import { BlockRenderer } from "@/components/cms/BlockRenderer"
 import { BlockEditor } from "@/components/cms/BlockEditor"
 import { SortableItem } from "@/components/cms/SortableItem"
@@ -67,6 +67,11 @@ const blockTypeIcons: Record<BlockType, React.ReactNode> = {
   [BlockType.QUOTE]: <Quote className="h-4 w-4" />,
   [BlockType.CODE]: <Code className="h-4 w-4" />,
   [BlockType.DIVIDER]: <Minus className="h-4 w-4" />,
+  [BlockType.KPI]: <TrendingUp className="h-4 w-4" />,
+  [BlockType.CHART]: <BarChart3 className="h-4 w-4" />,
+  [BlockType.NEWS_CARD]: <Newspaper className="h-4 w-4" />,
+  [BlockType.MARKET_NEWS]: <LineChart className="h-4 w-4" />,
+  [BlockType.EXPERT_GRID]: <Users className="h-4 w-4" />,
 }
 
 const blockTypeLabels: Record<BlockType, string> = {
@@ -76,6 +81,11 @@ const blockTypeLabels: Record<BlockType, string> = {
   [BlockType.QUOTE]: "Quote",
   [BlockType.CODE]: "Code",
   [BlockType.DIVIDER]: "Divider",
+  [BlockType.KPI]: "KPI",
+  [BlockType.CHART]: "Chart",
+  [BlockType.NEWS_CARD]: "News Card",
+  [BlockType.MARKET_NEWS]: "Market News",
+  [BlockType.EXPERT_GRID]: "Expert Grid",
 }
 
 export function IssueEditorClient({ issue }: IssueEditorClientProps) {
@@ -281,15 +291,26 @@ export function IssueEditorClient({ issue }: IssueEditorClientProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="coverImage">Cover Image URL</Label>
+                <Label htmlFor="slug">Slug</Label>
                 <Input
-                  id="coverImage"
-                  name="coverImage"
-                  type="url"
-                  defaultValue={issue.coverImage || ""}
-                  placeholder="https://example.com/cover.jpg"
+                  id="slug"
+                  name="slug"
+                  defaultValue={issue.slug || ""}
+                  placeholder="issue-slug"
+                  required
                 />
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="coverImage">Cover Image URL</Label>
+              <Input
+                id="coverImage"
+                name="coverImage"
+                type="url"
+                defaultValue={issue.coverImage || ""}
+                placeholder="https://example.com/cover.jpg"
+              />
             </div>
 
             <Button type="submit" disabled={isSubmitting}>

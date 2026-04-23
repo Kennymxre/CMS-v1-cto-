@@ -61,24 +61,33 @@ export default async function NewIssuePage() {
                   type="number"
                   placeholder="Auto-generated if empty"
                 />
-                <p className="text-xs text-muted-foreground">
-                  Leave empty to auto-generate the next number
-                </p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="status">Status</Label>
-                <select
-                  id="status"
-                  name="status"
-                  className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                  defaultValue="DRAFT"
-                >
-                  <option value={IssueStatus.DRAFT}>Draft</option>
-                  <option value={IssueStatus.PUBLISHED}>Published</option>
-                  <option value={IssueStatus.ARCHIVED}>Archived</option>
-                </select>
+                <Label htmlFor="slug">Slug</Label>
+                <Input
+                  id="slug"
+                  name="slug"
+                  placeholder="issue-slug"
+                />
+                <p className="text-[10px] text-muted-foreground italic">
+                  Leave empty to auto-generate from title
+                </p>
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="status">Status</Label>
+              <select
+                id="status"
+                name="status"
+                className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                defaultValue="DRAFT"
+              >
+                <option value={IssueStatus.DRAFT}>Draft</option>
+                <option value={IssueStatus.PUBLISHED}>Published</option>
+                <option value={IssueStatus.ARCHIVED}>Archived</option>
+              </select>
             </div>
 
             <div className="space-y-2">
